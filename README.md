@@ -1,17 +1,16 @@
-# Focus Lock 4.0 — input gate
+# Focus Lock
 
-This version removes the refocus watchdog completely.
+If your pointer could drift out of your work window to some other more entertaining windows (chatgpt dialog or some random youtube history channel), this is the tool for you. It will lock your focus on one particular window for as long as you wish and block your clicks anywhere else.
 
-It NEVER:
 
-- moves the mouse pointer;
-- calls `window:focus()` after the lock starts;
-- calls `application:activate()`;
-- hides or minimizes other windows;
-- moves or resizes windows.
+This is a concentration tool that uses Hammerspoon to confine your pointer...
 
-Instead, it records the currently focused window and uses a Hammerspoon
-`hs.eventtap` as an input gate.
+
+For my application scenario, I want to work on my vim latex window while watching the skim viewer refreshing the pdf, and I don't want to do anything else while writing.
+
+
+mac-focus-lock records the currently focused window and uses a Hammerspoon
+`hs.eventtap` as an input gate to lock dat focus.
 
 While locked:
 
@@ -22,13 +21,17 @@ While locked:
 - mouse clicks inside the locked Vim/Terminal window work normally;
 - common keyboard shortcuts for app/window/Space switching are deleted.
 
-There is no code that can "snap" the pointer back to the target window.
+## install
 
-## Upgrade
+Install Hammerspoon first with
+
+    brew install --cask hammerspoon
+
+then you install mac-focus-lock to your ~/bin history using the installation script
 
     ./install.sh
 
-Then:
+finally, load the configuration in Hammerspoon
 
     Hammerspoon menu -> Reload Config
 
@@ -41,39 +44,14 @@ The popup should show:
     4.0-input-gate
     event tap: enabled
 
-## Use
+## Use (lock for 50 minutes)
 
     focus-lock 50
+
+manual unlock: 
+
+    focus-unlock
 
 Emergency unlock:
 
     Ctrl + Option + Cmd + Esc
-
-## If an outside click still changes focus
-
-Run:
-
-    focus-status
-
-If it says:
-
-    event tap: DISABLED
-
-then macOS has disabled the event tap or Hammerspoon lacks the required
-Accessibility/Input Monitoring permission. Check:
-
-    System Settings
-      -> Privacy & Security
-      -> Accessibility
-      -> Hammerspoon
-
-and, on macOS versions that expose it:
-
-    System Settings
-      -> Privacy & Security
-      -> Input Monitoring
-      -> Hammerspoon
-
-Then restart Hammerspoon and reload the config.
-
-This is a concentration tool, not a security boundary.
