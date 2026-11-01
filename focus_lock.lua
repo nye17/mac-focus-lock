@@ -1,6 +1,6 @@
 -- focus_lock.lua
 --
--- Focus Lock v4: input gate, no refocusing.
+-- Focus Lock: input gate, no refocusing.
 --
 -- This version NEVER moves the mouse and NEVER tries to refocus/activate
 -- a window after the lock starts.
@@ -16,7 +16,7 @@
 -- Emergency unlock: Ctrl+Option+Cmd+Esc
 
 local M = {}
-M.VERSION = "4.0-input-gate"
+M.VERSION = "FOCUS LOCK V4.0"
 
 local state = {
     active = false,
