@@ -16,7 +16,7 @@
 -- Emergency unlock: Ctrl+Option+Cmd+Esc
 
 local M = {}
-M.VERSION = "FOCUS LOCK V4.0"
+M.VERSION = "Are you locked-in? (V4.0)"
 
 local state = {
     active = false,
@@ -396,7 +396,7 @@ function M.status()
 
     if state.active then
         notify(
-            "Focus lock: ON\n"
+            "Focus Lock is ON\n"
             .. M.VERSION
             .. "\nevent tap: "
             .. tapStatus,
@@ -406,7 +406,7 @@ function M.status()
     end
 
     notify(
-        "Focus lock: OFF\n" .. M.VERSION,
+        "Focus Lock is OFF\n" .. M.VERSION,
         1.8
     )
     return false
