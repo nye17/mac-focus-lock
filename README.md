@@ -1,57 +1,122 @@
-# Focus Lock
+# Focus Lock v5 — interaction lock
 
-If your pointer could drift out of your work window to some other more entertaining windows (chatgpt dialog or some random youtube history channel), this is the tool for you. It will lock your focus on one particular window for as long as you wish and block your clicks anywhere else.
+This version implements a different policy from v4:
 
+> **You may look anywhere, but you may interact only with the locked window.**
 
-This is a concentration tool that uses Hammerspoon to confine your pointer...
+## While locked
 
+| Action | Locked window | Other window, same Space | Other Space |
+|---|---:|---:|---:|
+| Move pointer | yes | yes | yes |
+| Left/right/middle click | yes | **blocked** | **blocked** |
+| Type / app keyboard shortcuts | yes | **blocked** | **blocked** |
+| Vertical scroll | yes | yes | yes |
+| Horizontal browser-navigation scroll | yes | **blocked** | **blocked** |
+| Space swipe | yes | yes | yes |
+| Ctrl-Left / Ctrl-Right Space switching | yes | yes | yes |
+| Pinch / smart zoom / rotate outside target | — | **blocked** | **blocked** |
 
-For my application scenario, I want to work on my vim latex window while watching the skim viewer refreshing the pdf, and I don't want to do anything else while writing.
+This means you can switch to a Space containing Skim, move the pointer over the PDF,
+and scroll through it. You cannot click Skim. You can switch to a Space containing
+Firefox and scroll a page, but you cannot click links, middle-click to open a tab,
+use Cmd-T, type into the browser, or use horizontal trackpad history navigation.
 
+## Dynamic resize/move
 
-mac-focus-lock records the currently focused window and uses a Hammerspoon
-`hs.eventtap` as an input gate to lock dat focus.
+The clickable region is **not cached**. Every attempted click reads the locked
+window's current `win:frame()`. If you resize or move the target window, its allowed
+interaction rectangle follows immediately.
 
-While locked:
+## Space awareness
 
-- mouse movement is free;
-- Skim remains visible and can keep refreshing;
-- scroll events are allowed;
-- a mouse click on Skim or any other non-target window is deleted;
-- mouse clicks inside the locked Vim/Terminal window work normally;
-- common keyboard shortcuts for app/window/Space switching are deleted.
+v5 also checks `hs.spaces.windowSpaces()` against `hs.spaces.activeSpaceOnScreen()`.
+If the locked window is on Desktop 1 while you are looking at Desktop 2, all clicks
+are blocked even if the pointer happens to occupy the same screen coordinates as
+the target window on Desktop 1.
 
-## install
+v5 never moves your mouse, calls `window:focus()`, activates an application, or
+forces you back to a Space.
 
-Install Hammerspoon first with
+## Install / upgrade
 
-    brew install --cask hammerspoon
+```bash
+./install.sh
+```
 
-then you install mac-focus-lock to your ~/bin history using the installation script
+Then:
 
-    ./install.sh
-
-finally, load the configuration in Hammerspoon
-
-    Hammerspoon menu -> Reload Config
+```text
+Hammerspoon menu -> Reload Config
+```
 
 Verify:
 
-    focus-status
+```bash
+focus-status
+```
 
-The popup should show:
+The popup should contain:
 
-    4.0-input-gate
-    event tap: enabled
+```text
+5.0-interaction-lock
+```
 
-## Use (lock for 50 minutes)
+Use:
 
-    focus-lock 50
+```bash
+focus-lock 50
+```
 
-manual unlock: 
+The second optional argument is the countdown before locking:
 
-    focus-unlock
+```bash
+focus-lock 50 6
+```
 
-Emergency unlock:
+## Emergency unlock
 
-    Ctrl + Option + Cmd + Esc
+```text
+Ctrl + Option + Cmd + Esc
+```
+
+Manual unlock from the shell:
+
+```bash
+focus-unlock
+```
+
+## Diagnostics
+
+`focus-status` reports whether the event tap is enabled and counts blocked clicks,
+keys, deliberate horizontal scrolls, and application-level gestures.
+
+If Firefox still reacts to an ordinary click while the status says zero blocked
+clicks, macOS/Hammerspoon is not delivering that click to the event tap. Check:
+
+```text
+System Settings
+  -> Privacy & Security
+  -> Accessibility
+  -> Hammerspoon
+```
+
+and, if present on your macOS version:
+
+```text
+System Settings
+  -> Privacy & Security
+  -> Input Monitoring
+  -> Hammerspoon
+```
+
+Then restart Hammerspoon and reload its config.
+
+## Deliberate limitation
+
+Clicking Mission Control/Desktop thumbnails is blocked because those are clicks
+outside the target. Switch Spaces using a trackpad Space swipe or Ctrl-Left/Right.
+This avoids creating a special exception that would also allow clicking arbitrary
+windows in Mission Control.
+
+This is a concentration aid, not a security boundary.

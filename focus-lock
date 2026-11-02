@@ -1,0 +1,27 @@
+#!/usr/bin/env bash
+set -euo pipefail
+
+MINUTES="${1:-50}"
+DELAY="${2:-4}"
+
+if ! [[ "$MINUTES" =~ ^[0-9]+([.][0-9]+)?$ ]]; then
+    echo "Usage: focus-lock [minutes] [countdown-seconds]" >&2
+    exit 2
+fi
+
+if ! [[ "$DELAY" =~ ^[0-9]+([.][0-9]+)?$ ]]; then
+    echo "Usage: focus-lock [minutes] [countdown-seconds]" >&2
+    exit 2
+fi
+
+if ! pgrep -x "Hammerspoon" >/dev/null 2>&1; then
+    open -gj -a Hammerspoon
+    sleep 2
+fi
+
+echo "Interaction lock will engage in ${DELAY}s for ${MINUTES} minute(s)."
+echo "Click the window you want to work in during the countdown."
+echo "You may later move across Spaces and scroll elsewhere, but clicks/typing outside are blocked."
+echo "Emergency unlock: Ctrl+Option+Cmd+Esc"
+
+open -g "hammerspoon://focus-lock?minutes=${MINUTES}&delay=${DELAY}"

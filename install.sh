@@ -3,10 +3,11 @@ set -euo pipefail
 
 HERE="$(cd "$(dirname "$0")" && pwd)"
 HS_DIR="$HOME/.hammerspoon"
+BIN_DIR="$HOME/bin"
 TARGET="$HS_DIR/focus_lock.lua"
 INIT="$HS_DIR/init.lua"
 
-mkdir -p "$HS_DIR"
+mkdir -p "$HS_DIR" "$BIN_DIR"
 touch "$INIT"
 
 if [ -f "$TARGET" ]; then
@@ -14,6 +15,10 @@ if [ -f "$TARGET" ]; then
 fi
 
 cp "$HERE/focus_lock.lua" "$TARGET"
+cp "$HERE/focus-lock" "$BIN_DIR/focus-lock"
+cp "$HERE/focus-unlock" "$BIN_DIR/focus-unlock"
+cp "$HERE/focus-status" "$BIN_DIR/focus-status"
+chmod +x "$BIN_DIR/focus-lock" "$BIN_DIR/focus-unlock" "$BIN_DIR/focus-status"
 
 if ! grep -Fq 'require("focus_lock")' "$INIT"; then
     {
@@ -23,21 +28,28 @@ if ! grep -Fq 'require("focus_lock")' "$INIT"; then
     } >> "$INIT"
 fi
 
-echo
-echo "Installed Focus Lock v4:"
-echo "  $TARGET"
-echo
-echo "Reload Hammerspoon:"
-echo "  Hammerspoon menu -> Reload Config"
-echo
-echo "Verify:"
-echo "  focus-status"
-echo
-echo "Expected version:"
-echo "  4.0-input-gate"
-echo
-echo "Use:"
-echo "  focus-lock 50"
-echo
-echo "Emergency unlock:"
-echo "  Ctrl+Option+Cmd+Esc"
+cat <<EOF
+
+Installed Focus Lock v5:
+  $TARGET
+
+Shell commands:
+  $BIN_DIR/focus-lock
+  $BIN_DIR/focus-unlock
+  $BIN_DIR/focus-status
+
+Now choose:
+  Hammerspoon menu -> Reload Config
+
+Then verify:
+  focus-status
+
+Expected version:
+  5.0-interaction-lock
+
+Use:
+  focus-lock 50
+
+Emergency unlock:
+  Ctrl+Option+Cmd+Esc
+EOF

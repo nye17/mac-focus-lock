@@ -1,0 +1,9 @@
+#!/usr/bin/env bash
+set -euo pipefail
+
+if ! pgrep -x "Hammerspoon" >/dev/null 2>&1; then
+    echo "Hammerspoon is not running."
+    exit 0
+fi
+
+open -g "hammerspoon://focus-status"
